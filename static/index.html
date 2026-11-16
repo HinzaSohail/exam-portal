@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sessional Exam Portal</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#1b2340;--mut:#5d6785;--line:#d9deea;--acc:#2f4bd8;--accink:#fff;--bad:#b42318;--ok:#157347;--warn:#b45309;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1426;--card:#171e36;--ink:#e8ecfa;--mut:#9aa5c8;--line:#2a3354;--acc:#8ea2ff;--accink:#0f1426;--bad:#ff8a80;--ok:#6fd49b;--warn:#f0b35a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1426;--card:#171e36;--ink:#e8ecfa;--mut:#9aa5c8;--line:#2a3354;--acc:#8ea2ff;--accink:#0f1426;--bad:#ff8a80;--ok:#6fd49b;--warn:#f0b35a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.7rem;margin:.4em 0}h2{font-size:1.3rem;margin:.3em 0 .8em}h3{margin:0 0 .2em}
+.mut{color:var(--mut);margin:.2em 0}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:0 0 14px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+details.card{display:block}summary{cursor:pointer;font-weight:700}
+button{font:inherit;background:var(--acc);color:var(--accink);border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible,label:focus-within{outline:3px solid var(--acc);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0}
+.grid label{display:block;font-size:.9rem;color:var(--mut)}
+.tabs{display:flex;gap:8px;margin:0 0 16px}.tabs button{background:transparent;color:var(--ink);border:1px solid var(--line)}.tabs button.on{background:var(--acc);color:var(--accink)}
+table{width:100%;border-collapse:collapse;background:var(--card)}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+.wrap{overflow-x:auto}
+.login{max-width:440px}.login .card{display:block}.login input{margin:6px 0}
+.timer{font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums}.timer.low{color:var(--bad)}
+.exam{display:grid;grid-template-columns:1fr 230px;gap:16px;align-items:start}
+.exam .card{display:block}
+@media(max-width:720px){.exam{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0;cursor:pointer}
+.opt input{position:absolute;opacity:0;width:1px}
+.bub{width:30px;height:30px;border-radius:50%;border:2px solid var(--mut);display:grid;place-items:center;font-weight:700;flex:none}
+.opt.sel{border-color:var(--acc)}.opt.sel .bub{background:var(--acc);border-color:var(--acc);color:var(--accink)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.nav button{background:transparent;color:var(--ink);border:1px solid var(--line);padding:8px 0}
+.nav .a{background:var(--ok);color:var(--bg);border-color:var(--ok)}.nav .r{border:2px dashed var(--warn)}.nav .c{outline:3px solid var(--acc)}
+.wb{background:var(--warn);color:var(--bg);padding:10px 16px;font-weight:700}
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:9;max-width:90%}
+.bad{color:var(--bad)}.ok{color:var(--ok)}
+ul.rules{padding-left:1.2em}
+textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+.exam{user-select:none;-webkit-user-select:none}.exam textarea{user-select:text;-webkit-user-select:text}
+.wm{position:fixed;inset:0;display:flex;flex-wrap:wrap;gap:60px 40px;padding:40px;opacity:.07;pointer-events:none;transform:rotate(-20deg);font-weight:700;z-index:5;overflow:hidden}
+@media print{body{display:none}}
+</style></head><body>
+<div id="app"></div><script>
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=x=>new Date(x).toLocaleString([],{dateStyle:'medium',timeStyle:'short'});
+const loc=x=>new Date(x-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+let tok=sessionStorage.getItem('tok'),me=null,tab='Exams',A=null,pos=0,T=[],fsOn=false,lastV=0,off=0,dirty=new Set();
+const TID=Math.random().toString(36).slice(2);
+const hb=()=>{try{localStorage.setItem('ep_live',JSON.stringify({id:TID,t:Date.now()}))}catch(e){}},
+other=()=>{try{const x=JSON.parse(localStorage.getItem('ep_live'));return !!x&&x.id!==TID&&Date.now()-x.t<4000}catch(e){return false}};
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.append(d);setTimeout(()=>d.remove(),3500)}
+function theme(){const r=document.documentElement,d=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);r.dataset.theme=d?'light':'dark'}
+async function api(p,b){const r=await fetch('/api/'+p,{method:b===undefined?'GET':'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:b===undefined?undefined:JSON.stringify(b)});
+const j=await r.json().catch(()=>({}));if(r.status===401&&p!=='login'&&tok)bye('You were logged out. This account may have signed in somewhere else.');if(!r.ok)throw new Error(j.error||'Request failed');return j}
+window.onunhandledrejection=e=>toast(e.reason&&e.reason.message||'Something went wrong.');
+function bye(m){tok=null;sessionStorage.removeItem('tok');stop();A=null;loginUI();toast(m)}
+function stop(){lock(false);T.forEach(clearInterval);T=[];fsOn=false;$('#sh')?.remove();try{localStorage.removeItem('ep_live')}catch(e){}if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}
+
+/* ---------- login ---------- */
+function loginUI(){me=null;app.innerHTML=`<main class="login"><h1>Sessional Exam Portal</h1><p class="mut">Sign in with your university ID.</p>
+<div class="card"><label>User ID<input id="lu" autocomplete="username"></label><label>Password<input id="lp" type="password" autocomplete="current-password"></label>
+<button onclick="login($('#lu').value,$('#lp').value)">Log in</button></div>
+<p class="mut">Demo accounts (password is the same as the ID):</p><div class="row">
+<button class="ghost" onclick="login('admin','admin')">Teacher</button><button class="ghost" onclick="login('s1','s1')">Student: Ayesha</button>
+<button class="ghost" onclick="login('s2','s2')">Student: Bilal</button><button class="ghost" onclick="login('s3','s3')">Student: Hira (fee pending)</button></div></main>`}
+async function login(u,p){if(other())return toast('An exam is in progress in another tab. Close this tab.');const r=await api('login',{id:u.trim(),pw:p});tok=r.token;sessionStorage.setItem('tok',tok);me=r.user;tab='Exams';home()}
+async function out(){stop();try{await api('me')}catch(e){}tok=null;sessionStorage.removeItem('tok');loginUI()}
+
+/* ---------- home ---------- */
+async function home(){A=null;const h=`<header class="bar"><b>Sessional Exam Portal</b><span class="row"><span class="mut">${esc(me.name)}</span><button class="ghost" onclick="theme()">Theme</button><button class="ghost" onclick="out()">Log out</button></span></header>`;
+app.innerHTML=h+'<main>'+(me.role==='student'?await stuHTML():await staffHTML())+'</main>'}
+async function stuHTML(){const es=await api('exams'),n=Date.now();
+return'<h1>Your exams</h1>'+(es.map(e=>{const st=n<e.t0?'Opens '+fmt(e.t0):n>e.t1?'Closed':'Open until '+fmt(e.t1),ip=e.last&&e.last.status==='progress';
+return`<article class="card"><div><h3>${esc(e.title)}</h3><p class="mut">${e.course}, ${e.type}. ${e.dur} minutes, ${e.n} questions. ${st}</p><p>${e.last?esc(e.last.msg):''}</p></div><button onclick="startExam('${e.id}')">${ip?'Resume':'Start exam'}</button></article>`}).join('')||'<p class="mut">No exams for your courses yet.</p>')}
+async function staffHTML(){let h=`<h1>Teacher dashboard</h1><nav class="tabs">${['Exams','Results','Audit'].map(t=>`<button class="${t===tab?'on':''}" onclick="tab='${t}';home()">${t}</button>`).join('')}</nav>`;
+if(tab==='Exams'){const es=await api('exams');
+h+=es.map(e=>`<article class="card"><div><h3>${esc(e.title)}</h3><p class="mut">${e.course}, ${e.type}. ${e.dur} min, ${e.n} questions, max ${e.maxv} violations, negative marking ${e.neg}. ${fmt(e.t0)} to ${fmt(e.t1)}</p></div><button class="ghost" onclick="pub('${e.id}')">${e.pub?'Hide results':'Publish results'}</button></article>`).join('');
+h+=`<details class="card"><summary>Create exam</summary><div class="grid"><label>Title<input id="nt"></label><label>Course<select id="nc"><option>CS101</option><option>MTH201</option></select></label>
+<label>Sessional<select id="ny"><option>Sessional 1</option><option>Sessional 2</option><option>Midterm</option><option>Final</option><option>Quiz</option></select></label>
+<label>Opens<input id="ns" type="datetime-local" value="${loc(Date.now())}"></label><label>Closes<input id="ne" type="datetime-local" value="${loc(Date.now()+7*864e5)}"></label>
+<label>Minutes<input id="nd" type="number" value="10"></label><label>Max violations<input id="nv" type="number" value="3"></label>
+<label>Negative marking<select id="ng"><option value="0">None</option><option value="0.25">25% of marks</option></select></label></div><button onclick="addExam()">Create exam</button></details>
+<details class="card"><summary>Add a question</summary><div class="grid"><label>Exam<select id="qe">${es.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')}</select></label>
+<label>Type<select id="qk"><option value="mcq">MCQ</option><option value="short">Short answer</option><option value="long">Long answer</option></select></label>
+<label>Question<input id="qt"></label><label>Option A<input id="q0"></label><label>Option B<input id="q1"></label><label>Option C<input id="q2"></label><label>Option D<input id="q3"></label>
+<label>Correct<select id="qa"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></label><label>Marks<input id="qm" type="number" value="2"></label></div><button onclick="addQ()">Add question</button></details>`}
+else if(tab==='Results'){const rs=await api('results');const rows=rs.map(a=>`<tr><td>${esc(a.name)}<br><span class="mut">${esc(a.roll)}</span></td><td>${esc(a.title)}</td><td>${a.status==='progress'?'In progress':'Submitted'+(a.reason?' ('+esc(a.reason)+')':'')}</td><td>${a.status==='progress'?'-':a.score+' / '+a.mx+(a.pend?' (theory pending)':'')}</td><td title="${esc(a.viol.join(', '))}" class="${a.viol.length?'bad':''}">${a.viol.length}</td><td>${a.pend?`<button onclick="gradeUI('${a.id}')">Grade theory</button> `:''}<button class="ghost" onclick="grant('${a.eid}','${a.uid}')">Allow re-attempt</button></td></tr>`).join('');
+h+=rows?`<div class="wrap"><table><tr><th>Student</th><th>Exam</th><th>Status</th><th>Score</th><th>Violations</th><th></th></tr>${rows}</table></div>`:'<p class="mut">No attempts yet.</p>'}
+else{const au=await api('audit');h+=`<div class="wrap"><table><tr><th>Time</th><th>User</th><th>Action</th></tr>${au.map(a=>`<tr><td>${fmt(a.t)}</td><td>${esc(a.u||'')}</td><td>${esc(a.a)}</td></tr>`).join('')}</table></div>`}
+return h}
+async function pub(id){await api('exams/'+id+'/publish',{});home()}
+async function grant(e,u){await api('exams/'+e+'/grant',{user:u});toast('Re-attempt granted.');home()}
+async function addExam(){const g=i=>$('#'+i).value;await api('exams',{title:g('nt'),course:g('nc'),type:g('ny'),t0:Date.parse(g('ns')),t1:Date.parse(g('ne')),dur:g('nd'),maxv:g('nv'),neg:g('ng')});home();toast('Exam created. Add questions next.')}
+async function addQ(){const g=i=>$('#'+i).value;await api('exams/'+g('qe')+'/questions',{k:g('qk'),t:g('qt'),o:[0,1,2,3].map(i=>g('q'+i)),a:g('qa'),m:g('qm')});home();toast('Question added.')}
+async function gradeUI(id){const d=await api('attempts/'+id);
+app.innerHTML=`<header class="bar"><b>Grade theory answers</b><button class="ghost" onclick="home()">Back</button></header><main><h2>${esc(d.name)}, ${esc(d.title)}</h2>${d.items.map(x=>`<article class="card" style="display:block"><p class="mut">${x.k==='short'?'Short answer':'Long answer'}, out of ${x.m} marks</p><h3>${esc(x.t)}</h3><p style="white-space:pre-wrap">${esc(x.ans||'(no answer)')}</p><label>Marks<input id="gm${x.i}" type="number" min="0" max="${x.m}" step="0.5" value="${x.man}"></label></article>`).join('')}<button onclick="saveGrade('${id}',${JSON.stringify(d.items.map(x=>x.i))})">Save grades</button></main>`}
+async function saveGrade(id,ix){const man={};ix.forEach(i=>man[i]=+$('#gm'+i).value||0);await api('attempts/'+id,{man});toast('Grades saved.');home()}
+
+/* ---------- attempt ---------- */
+async function startExam(id){if(other())return toast('The exam is open in another tab. Close it first.');A=await api('exams/'+id+'/start',{});off=A.now-Date.now();rules()}
+function rules(){app.innerHTML=`<main><h1>${esc(A.title)}</h1><div class="card" style="display:block"><h2>Before you begin</h2><ul class="rules">
+<li>You have until ${fmt(A.deadline)}. The timer runs on the server and is not paused if you leave.</li>
+<li>The exam goes full screen. Leaving full screen, switching tabs, copying, pasting, right-clicking or opening developer tools counts as a violation.</li>
+<li>Violation ${A.maxv} submits your exam automatically.</li><li>Answers save automatically.</li><li>The site cannot be opened in a second tab while the exam is running.</li>
+<li>Your name and roll number appear faintly on screen. Screenshots and split screen are violations.</li></ul><button onclick="begin()">I understand, begin</button></div></main>`}
+async function begin(){fsOn=false;try{await document.documentElement.requestFullscreen();fsOn=true}catch(e){toast('Full screen is not available here. Continuing without it.')}
+pos=0;lock(true);ui();T=[setInterval(tick,1000),setInterval(flush,5000),setInterval(()=>{if(outerWidth-innerWidth>200||outerHeight-innerHeight>200)v('Developer tools open')},2000)];tick()}
+const theory=(i,Q)=>`<textarea id="ta" rows="${Q.k==='long'?12:5}" placeholder="Type your answer here" oninput="txt(${i},this.value)">${esc(A.ans[i]||'')}</textarea><p class="mut" id="wc">${wc(A.ans[i])} words</p>`,
+wc=t=>(t||'').trim()?t.trim().split(/\s+/).length:0;
+function ui(){const q=A.qs[pos],on=i=>A.ans[i]!=null&&A.ans[i]!=='';
+app.innerHTML=`<header class="bar"><b>${esc(A.title)}</b><span class="row"><span id="sv" class="mut"></span><span id="vc" class="mut">Violations: ${A.viol} of ${A.maxv}</span><span id="tm" class="timer"></span></span></header><div id="wb" class="wb" hidden></div>
+<div class="wm" aria-hidden="true">${Array(40).fill(`<span>${esc(me.name+' '+me.roll)}</span>`).join('')}</div>
+<main><div class="exam"><section class="card"><p class="mut">Question ${pos+1} of ${A.qs.length}, ${q.m} marks</p><h2>${esc(q.t)}</h2>
+${q.k!=='mcq'?theory(q.i,q):q.o.map((o,k)=>`<label class="opt ${A.ans[q.i]===o.oi?'sel':''}"><input type="radio" name="o" ${A.ans[q.i]===o.oi?'checked':''} onchange="pick(${q.i},${o.oi})"><span class="bub">${'ABCD'[k]}</span>${esc(o.x)}</label>`).join('')}
+<div class="row" style="margin-top:14px"><button class="ghost" onclick="go(-1)">Previous</button><button class="ghost" onclick="go(1)">Next</button>
+<button class="ghost" onclick="mark(${q.i})">${A.rev[q.i]?'Remove review mark':'Mark for review'}</button><button onclick="if(confirm('Submit your exam now?'))submit('')">Submit</button></div></section>
+<aside class="card"><div><p class="mut">Navigator</p><div class="nav">${A.qs.map((x,k)=>`<button class="${on(x.i)?'a':''} ${A.rev[x.i]?'r':''} ${k===pos?'c':''}" onclick="pos=${k};ui()">${k+1}</button>`).join('')}</div></div></aside></div></main>`;tick()}
+const go=d=>{pos=Math.min(A.qs.length-1,Math.max(0,pos+d));ui()};
+function pick(q,v){A.ans[q]=v;dirty.add(q);flush();ui()}
+function txt(q,t){A.ans[q]=t;dirty.add(q);const w=$('#wc');if(w)w.textContent=wc(t)+' words'}
+function mark(q){A.rev[q]=!A.rev[q];dirty.add(q);flush();ui()}
+async function flush(){if(!A)return;const id=A.id;for(const q of [...dirty]){dirty.delete(q);
+try{await api('attempts/'+id+'/answer',{q:+q,v:A.ans[q]??null,rev:!!A.rev[q]});const s=$('#sv');if(s)s.textContent='Saved '+new Date().toLocaleTimeString()}
+catch(e){if(/over|submitted/i.test(e.message))return done(e.message);dirty.add(q)}}}
+function tick(){if(!A)return;hb();if(other())v('Exam opened in another tab',1);const l=A.deadline-(Date.now()+off);if(l<=0)return submit('time expired');
+const t=$('#tm');if(t){t.textContent=String(Math.floor(l/60000)).padStart(2,'0')+':'+String(Math.floor(l/1000)%60).padStart(2,'0');t.className='timer'+(l<60000?' low':'')}}
+async function submit(r){if(!A)return;await flush();try{await api('attempts/'+A.id+'/submit',{})}catch(e){}done(r?'Time is over. Your exam was submitted.':'Exam submitted. Your teacher will publish results.')}
+function done(m){stop();A=null;home();toast(m)}
+function shield(msg){if(!A||$('#sh'))return;const d=document.createElement('div');d.id='sh';d.style.cssText='position:fixed;inset:0;background:var(--bg);color:var(--ink);z-index:20;display:grid;place-items:center;text-align:center;padding:24px';
+d.innerHTML='<div><h2>Exam hidden</h2><p>'+esc(msg)+'</p><button>Return to exam</button></div>';document.body.append(d);d.querySelector('button').onclick=async()=>{if(fsOn){try{await document.documentElement.requestFullscreen()}catch(e){}}d.remove()}}
+/* lockdown: the browser only reports; the server counts and decides */
+async function v(kind,hide){if(!A||Date.now()-lastV<1500)return;lastV=Date.now();
+try{const r=await api('attempts/'+A.id+'/violation',{kind});if(r.submitted)return done('Exam submitted automatically: too many violations.');A.viol=r.count;
+const w=$('#wb'),c=$('#vc');if(c)c.textContent=`Violations: ${r.count} of ${r.max}`;if(w){w.hidden=false;w.textContent=`Warning: ${kind}. At ${r.max} violations your exam is submitted automatically.`}
+if(hide)shield(kind+'. This was recorded as a violation.')}catch(e){if(/over|submitted/i.test(e.message))done(e.message)}}
+const L={visibilitychange:()=>document.hidden&&v('Tab switch',1),blur:()=>v('Window lost focus',1),fullscreenchange:()=>{if(fsOn&&!document.fullscreenElement)v('Left full screen',1)},
+resize:()=>{if(fsOn&&document.fullscreenElement&&(innerWidth<screen.width*.9||innerHeight<screen.height*.8))v('Window resized or split screen',1)},
+keyup:e=>{if(e.key==='PrintScreen'){try{navigator.clipboard.writeText('')}catch(x){}v('Screenshot key',1)}},
+copy:e=>{e.preventDefault();v('Copy attempt')},cut:e=>{e.preventDefault();v('Cut attempt')},paste:e=>{e.preventDefault();v('Paste attempt')},contextmenu:e=>{e.preventDefault();v('Right-click')},
+keydown:e=>{const k=e.key.toLowerCase();if(e.key==='F12'||e.key==='PrintScreen'||((e.ctrlKey||e.metaKey)&&['c','v','p','s','u'].includes(k))||(e.ctrlKey&&e.shiftKey&&['i','j'].includes(k))){e.preventDefault();v('Blocked shortcut')}}};
+function lock(on){for(const k in L)(k==='blur'||k==='resize'?window:document)[on?'addEventListener':'removeEventListener'](k,L[k])}
+if(tok)api('me').then(u=>{me=u;home()}).catch(()=>loginUI());else loginUI();
+</script></body></html>
